@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let uid = 0;
+        class Dep {
+            constructor() {
+                this.id = uid++;
+                this.subs = [];
+            }
+            addSub(sub) {
+                this.subs.push(sub);
+            }
+            depend() {
+                Dep.target.addDep(this);
+            }
+            removeSub(sub) {
+                console.log(this.subs)
+                const index = this.subs.indexOf(sub);
+                if (index != -1) {
+                    this.subs.splice(index, 1);
+                }
+            }
+            notify() {
+                this.subs.forEach(function (sub) {
+                    sub.update();
+                });
+            }
+        }
+        this.watch = new Dep();
+        class Watch {
+            constructor(props) {
+                this.callback = props.callback;
+            }
+            update(callback) {
+                this.callback()
+            }
+        }
+        // 收集需要触发的依赖
+        this.watch.addSub(new Watch({
+            callback() {
+                console.log(1)
+            }
+        }))
+        let watch2 = new Watch({
+            callback() {
+                console.log(2)
+            }
+        })
+        this.watch.addSub(watch2)
+        this.watch.addSub(new Watch({
+            callback() {
+                console.log(3)
+            }
+        }))
+        // 移除监听
+        this.watch.removeSub(watch2)
+        console.log(this.watch)
+        // 集体触发更新
+        this.watch.notify()
+    </script>
+</body>
+
+</html>
